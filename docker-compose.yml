@@ -1,0 +1,25 @@
+# docker-compose.yml — Run the backend with Docker
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=your-secret-key-change-this
+      - DATABASE_URL=sqlite+aiosqlite:///./crisis_response.db
+      - DEBUG=false
+      - ADMIN_EMAIL=admin@crisisresponse.gov
+      - ADMIN_PASSWORD=SecureAdmin2024!
+    volumes:
+      - ./backend/crisis_response.db:/app/crisis_response.db
+      - ./backend/serviceAccountKey.json:/app/serviceAccountKey.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
